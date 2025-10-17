@@ -8,7 +8,6 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://unpkg.com/recharts/umd/Recharts.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -18,15 +17,13 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f8f9fa;
             min-height: 100vh;
             color: #333;
         }
 
         .app {
             min-height: 100vh;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
         }
 
         .app-header {
@@ -35,33 +32,17 @@
             padding: 2rem;
             text-align: center;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .app-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="%23ffffff" opacity="0.1"><polygon points="0,0 1000,50 1000,100 0,100"/></svg>');
-            background-size: cover;
         }
 
         .app-header h1 {
             font-size: 2.8rem;
             margin-bottom: 0.5rem;
             font-weight: 700;
-            position: relative;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
         .app-header p {
             font-size: 1.2rem;
             opacity: 0.9;
-            position: relative;
             font-weight: 300;
         }
 
@@ -85,18 +66,6 @@
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
             border-left: 5px solid;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
         }
 
         .stat-card:hover {
@@ -157,16 +126,11 @@
             padding: 2rem;
             border-radius: 15px;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-        }
-
-        .chart-container:hover {
-            transform: translateY(-2px);
         }
 
         .chart-header {
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: center;
             margin-bottom: 1.5rem;
         }
@@ -175,26 +139,6 @@
             color: #2c3e50;
             font-size: 1.4rem;
             font-weight: 600;
-        }
-
-        .chart-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .chart-actions button {
-            padding: 0.5rem 1rem;
-            border: 1px solid #ddd;
-            background: white;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-        }
-
-        .chart-actions button:hover {
-            background: #f8f9fa;
-            border-color: #3498db;
         }
 
         .tables-grid {
@@ -238,7 +182,6 @@
         .data-table td {
             padding: 1rem 1.5rem;
             border-bottom: 1px solid #e9ecef;
-            transition: background 0.3s ease;
         }
 
         .data-table tr:hover td {
@@ -308,8 +251,7 @@
             font-size: 0.9rem;
         }
 
-        .filter-group select,
-        .filter-group input {
+        .filter-group select {
             padding: 0.8rem;
             border: 2px solid #e9ecef;
             border-radius: 8px;
@@ -317,10 +259,28 @@
             transition: border-color 0.3s ease;
         }
 
-        .filter-group select:focus,
-        .filter-group input:focus {
+        .filter-group select:focus {
             outline: none;
             border-color: #3498db;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            align-self: flex-end;
+            height: fit-content;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
         }
 
         @media (max-width: 768px) {
@@ -348,26 +308,6 @@
                 min-width: 100%;
             }
         }
-
-        .refresh-btn {
-            background: linear-gradient(135deg, #3498db, #2980b9);
-            color: white;
-            border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .refresh-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
-        }
     </style>
 </head>
 <body>
@@ -377,7 +317,7 @@
         const { useState, useEffect, useCallback } = React;
         const { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } = Recharts;
 
-        // Servicio de API simulado (en un caso real, conectarías con tu backend)
+        // Servicio de API simulado
         const apiService = {
             async getDashboardData() {
                 // Simulamos datos del almacén de datos
@@ -723,8 +663,7 @@
         };
 
         // Renderizar la aplicación
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<Dashboard />);
+        ReactDOM.render(<Dashboard />, document.getElementById('root'));
     </script>
 </body>
 </html>
