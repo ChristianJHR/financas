@@ -4,10 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard de Préstamos</title>
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://unpkg.com/recharts/umd/Recharts.js"></script>
     <style>
         * {
             margin: 0;
@@ -16,9 +12,8 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f8f9fa;
-            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+            background: #f0f2f5;
             color: #333;
         }
 
@@ -27,142 +22,111 @@
         }
 
         .app-header {
-            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             color: white;
             padding: 2rem;
             text-align: center;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         .app-header h1 {
-            font-size: 2.8rem;
+            font-size: 2.5rem;
             margin-bottom: 0.5rem;
-            font-weight: 700;
         }
 
         .app-header p {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             opacity: 0.9;
-            font-weight: 300;
         }
 
         .dashboard {
             padding: 2rem;
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
 
         .stat-card {
             background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-            border-left: 5px solid;
-            transition: all 0.3s ease;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid #2a5298;
         }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-        }
-
-        .stat-card.primary { border-left-color: #3498db; }
-        .stat-card.success { border-left-color: #2ecc71; }
-        .stat-card.warning { border-left-color: #f39c12; }
-        .stat-card.danger { border-left-color: #e74c3c; }
-        .stat-card.info { border-left-color: #9b59b6; }
 
         .stat-card h3 {
-            color: #7f8c8d;
+            color: #666;
             font-size: 0.9rem;
-            margin-bottom: 0.8rem;
+            margin-bottom: 0.5rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 600;
         }
 
         .stat-card .value {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #2c3e50;
-            margin-bottom: 0.5rem;
-            line-height: 1;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1e3c72;
         }
 
-        .stat-card .trend {
-            font-size: 0.9rem;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            display: inline-block;
-            font-weight: 600;
+        .charts-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
         }
 
-        .trend.positive {
-            background: #d5f4e6;
-            color: #27ae60;
-        }
-
-        .trend.negative {
-            background: #fdeaea;
-            color: #e74c3c;
+        .charts-container h2 {
+            color: #1e3c72;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #f0f2f5;
+            padding-bottom: 0.5rem;
         }
 
         .charts-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            grid-template-columns: 1fr 1fr;
             gap: 2rem;
-            margin-bottom: 2rem;
         }
 
-        .chart-container {
+        .chart {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #e9ecef;
+        }
+
+        .chart-placeholder {
+            text-align: center;
+            color: #666;
+        }
+
+        .chart-placeholder .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .tables-container {
             background: white;
             padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        .chart-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .tables-container h2 {
+            color: #1e3c72;
             margin-bottom: 1.5rem;
-        }
-
-        .chart-header h2 {
-            color: #2c3e50;
-            font-size: 1.4rem;
-            font-weight: 600;
-        }
-
-        .tables-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 2rem;
-        }
-
-        .table-container {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-
-        .table-header {
-            padding: 1.5rem 2rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .table-header h2 {
-            font-size: 1.4rem;
-            font-weight: 600;
+            border-bottom: 2px solid #f0f2f5;
+            padding-bottom: 0.5rem;
         }
 
         .data-table {
@@ -171,116 +135,80 @@
         }
 
         .data-table th {
-            background: #f8f9fa;
-            padding: 1rem 1.5rem;
+            background: #1e3c72;
+            color: white;
+            padding: 1rem;
             text-align: left;
-            font-weight: 600;
-            color: #2c3e50;
-            border-bottom: 2px solid #e9ecef;
         }
 
         .data-table td {
-            padding: 1rem 1.5rem;
+            padding: 1rem;
             border-bottom: 1px solid #e9ecef;
         }
 
-        .data-table tr:hover td {
+        .data-table tr:nth-child(even) {
             background: #f8f9fa;
         }
 
         .status-badge {
             padding: 0.3rem 0.8rem;
-            border-radius: 20px;
+            border-radius: 15px;
             font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
+            font-weight: bold;
         }
 
-        .status-approved {
-            background: #d5f4e6;
-            color: #27ae60;
+        .status-good {
+            background: #d4edda;
+            color: #155724;
         }
 
-        .status-pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .status-rejected {
-            background: #fdeaea;
-            color: #e74c3c;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 3rem;
-            color: #7f8c8d;
-            font-size: 1.1rem;
-        }
-
-        .error {
-            background: #fdeaea;
-            color: #e74c3c;
-            padding: 1rem;
-            border-radius: 10px;
-            margin: 1rem 0;
-            border-left: 4px solid #e74c3c;
+        .status-bad {
+            background: #f8d7da;
+            color: #721c24;
         }
 
         .filters {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
             background: white;
             padding: 1.5rem;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
         }
 
         .filter-group {
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
-            min-width: 200px;
         }
 
         .filter-group label {
-            font-weight: 600;
-            color: #2c3e50;
+            font-weight: bold;
+            color: #1e3c72;
             font-size: 0.9rem;
         }
 
         .filter-group select {
-            padding: 0.8rem;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-        }
-
-        .filter-group select:focus {
-            outline: none;
-            border-color: #3498db;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            min-width: 150px;
         }
 
         .refresh-btn {
-            background: linear-gradient(135deg, #3498db, #2980b9);
+            background: #1e3c72;
             color: white;
             border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
             cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
             align-self: flex-end;
-            height: fit-content;
         }
 
         .refresh-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+            background: #2a5298;
         }
 
         @media (max-width: 768px) {
@@ -296,173 +224,97 @@
                 grid-template-columns: 1fr;
             }
 
-            .chart-container {
-                padding: 1rem;
-            }
-
             .filters {
                 flex-direction: column;
-            }
-
-            .filter-group {
-                min-width: 100%;
             }
         }
     </style>
 </head>
 <body>
-    <div id="root"></div>
-
-    <script type="text/babel">
-        const { useState, useEffect, useCallback } = React;
-        const { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } = Recharts;
-
-        // Servicio de API simulado
-        const apiService = {
-            async getDashboardData() {
-                // Simulamos datos del almacén de datos
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                
-                return {
-                    summary: {
-                        totalLoans: 1247,
-                        totalAmount: 45892350,
-                        activeLoans: 892,
-                        overdueLoans: 156,
-                        paidAmount: 28945600,
-                        pendingAmount: 16946750
-                    },
-                    loansByType: [
-                        { type: 'Personal', count: 645, amount: 12500000 },
-                        { type: 'Automotriz', count: 328, amount: 18900000 },
-                        { type: 'Hipotecario', count: 274, amount: 14492350 }
-                    ],
-                    loansByStatus: [
-                        { status: 'Aprobado', count: 892, color: '#27ae60' },
-                        { status: 'En proceso', count: 199, color: '#f39c12' },
-                        { status: 'Rechazado', count: 156, color: '#e74c3c' }
-                    ],
-                    morosityData: [
-                        { month: 'Ene', morosity: 4.2 },
-                        { month: 'Feb', morosity: 3.8 },
-                        { month: 'Mar', morosity: 5.1 },
-                        { month: 'Abr', morosity: 4.7 },
-                        { month: 'May', morosity: 6.2 },
-                        { month: 'Jun', morosity: 5.8 }
-                    ],
-                    branchPerformance: [
-                        { branch: 'Sucursal Norte', loans: 345, amount: 12500000, approvalRate: 78 },
-                        { branch: 'Sucursal Sur', loans: 289, amount: 9800000, approvalRate: 82 },
-                        { branch: 'Sucursal Este', loans: 312, amount: 11200000, approvalRate: 75 },
-                        { branch: 'Sucursal Oeste', loans: 301, amount: 12392350, approvalRate: 71 }
-                    ],
-                    topClients: [
-                        { id: 1, name: 'María González', loans: 3, totalAmount: 1500000, status: 'Al día' },
-                        { id: 2, name: 'Carlos Rodríguez', loans: 2, totalAmount: 2800000, status: 'Al día' },
-                        { id: 3, name: 'Ana Martínez', loans: 4, totalAmount: 3200000, status: 'En mora' },
-                        { id: 4, name: 'Juan Pérez', loans: 1, totalAmount: 800000, status: 'Al día' },
-                        { id: 5, name: 'Laura Sánchez', loans: 2, totalAmount: 1950000, status: 'En mora' }
-                    ]
-                };
-            }
-        };
-
-        // Componente de Tarjeta de Estadísticas
-        const StatsCard = ({ title, value, trend, trendType, type = 'primary' }) => (
-            <div className={`stat-card ${type}`}>
-                <h3>{title}</h3>
-                <div className="value">{value}</div>
-                {trend && (
-                    <span className={`trend ${trendType}`}>
-                        {trendType === 'positive' ? '↗' : '↘'} {trend}
-                    </span>
-                )}
-            </div>
-        );
-
-        // Componente de Gráfico de Tipos de Préstamo
-        const LoanTypeChart = ({ data }) => (
-            <div className="chart-container">
-                <div className="chart-header">
-                    <h2>Distribución por Tipo de Préstamo</h2>
+    <div class="app">
+        <div class="app-header">
+            <h1>🏦 Dashboard de Préstamos</h1>
+            <p>Sistema de Gestión Crediticia - Almacén de Datos</p>
+        </div>
+        
+        <div class="dashboard">
+            <!-- Filtros -->
+            <div class="filters">
+                <div class="filter-group">
+                    <label>Período</label>
+                    <select id="periodFilter">
+                        <option>Últimos 3 meses</option>
+                        <option>Últimos 6 meses</option>
+                        <option>Último año</option>
+                    </select>
                 </div>
-                <ResponsiveContainer width="100%" height={300}>
-                    <PieChart>
-                        <Pie
-                            data={data}
-                            cx="50%"
-                            cy="50%"
-                            labelLine={false}
-                            label={({ type, percent }) => `${type} ${(percent * 100).toFixed(0)}%`}
-                            outerRadius={100}
-                            fill="#8884d8"
-                            dataKey="count"
-                        >
-                            {data.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={['#0088FE', '#00C49F', '#FFBB28'][index % 3]} />
-                            ))}
-                        </Pie>
-                        <Tooltip formatter={(value) => [`${value} préstamos`, 'Cantidad']} />
-                        <Legend />
-                    </PieChart>
-                </ResponsiveContainer>
-            </div>
-        );
-
-        // Componente de Gráfico de Morosidad
-        const MorosityChart = ({ data }) => (
-            <div className="chart-container">
-                <div className="chart-header">
-                    <h2>Tendencia de Morosidad</h2>
+                <div class="filter-group">
+                    <label>Sucursal</label>
+                    <select id="branchFilter">
+                        <option>Todas las sucursales</option>
+                        <option>Sucursal Norte</option>
+                        <option>Sucursal Sur</option>
+                        <option>Sucursal Este</option>
+                        <option>Sucursal Oeste</option>
+                    </select>
                 </div>
-                <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={data}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="month" />
-                        <YAxis label={{ value: '% Morosidad', angle: -90, position: 'insideLeft' }} />
-                        <Tooltip formatter={(value) => [`${value}%`, 'Morosidad']} />
-                        <Legend />
-                        <Line 
-                            type="monotone" 
-                            dataKey="morosity" 
-                            stroke="#e74c3c" 
-                            strokeWidth={3}
-                            name="Tasa de Morosidad"
-                            dot={{ fill: '#e74c3c', strokeWidth: 2, r: 6 }}
-                        />
-                    </LineChart>
-                </ResponsiveContainer>
-            </div>
-        );
-
-        // Componente de Rendimiento por Sucursal
-        const BranchPerformance = ({ data }) => (
-            <div className="chart-container">
-                <div className="chart-header">
-                    <h2>Rendimiento por Sucursal</h2>
+                <div class="filter-group">
+                    <label>Tipo de Préstamo</label>
+                    <select id="loanTypeFilter">
+                        <option>Todos los tipos</option>
+                        <option>Personal</option>
+                        <option>Automotriz</option>
+                        <option>Hipotecario</option>
+                    </select>
                 </div>
-                <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={data}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="branch" />
-                        <YAxis yAxisId="left" />
-                        <YAxis yAxisId="right" orientation="right" />
-                        <Tooltip />
-                        <Legend />
-                        <Bar yAxisId="left" dataKey="loans" fill="#3498db" name="N° Préstamos" />
-                        <Bar yAxisId="right" dataKey="approvalRate" fill="#2ecc71" name="Tasa Aprobación (%)" />
-                    </BarChart>
-                </ResponsiveContainer>
+                <button class="refresh-btn" onclick="loadData()">🔄 Actualizar</button>
             </div>
-        );
 
-        // Componente de Tabla de Clientes
-        const ClientTable = ({ data }) => (
-            <div className="table-container">
-                <div className="table-header">
-                    <h2>Top Clientes</h2>
+            <!-- Estadísticas -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total de Préstamos</h3>
+                    <div class="value" id="totalLoans">1,247</div>
                 </div>
-                <table className="data-table">
+                <div class="stat-card">
+                    <h3>Monto Total</h3>
+                    <div class="value" id="totalAmount">$45.8M</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Préstamos Activos</h3>
+                    <div class="value" id="activeLoans">892</div>
+                </div>
+                <div class="stat-card">
+                    <h3>En Morosidad</h3>
+                    <div class="value" id="overdueLoans">156</div>
+                </div>
+            </div>
+
+            <!-- Gráficos -->
+            <div class="charts-container">
+                <h2>📊 Análisis de Cartera</h2>
+                <div class="charts-grid">
+                    <div class="chart">
+                        <div class="chart-placeholder">
+                            <div class="icon">📈</div>
+                            <h3>Distribución por Tipo</h3>
+                            <p>Personal: 645 | Auto: 328 | Hipoteca: 274</p>
+                        </div>
+                    </div>
+                    <div class="chart">
+                        <div class="chart-placeholder">
+                            <div class="icon">📊</div>
+                            <h3>Tendencia de Morosidad</h3>
+                            <p>Ene: 4.2% | Feb: 3.8% | Mar: 5.1%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla de Clientes -->
+            <div class="tables-container">
+                <h2>👥 Top Clientes</h2>
+                <table class="data-table">
                     <thead>
                         <tr>
                             <th>Cliente</th>
@@ -472,198 +324,96 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {data.map((client, index) => (
-                            <tr key={client.id}>
-                                <td>{client.name}</td>
-                                <td>{client.loans}</td>
-                                <td>${client.totalAmount.toLocaleString()}</td>
-                                <td>
-                                    <span className={`status-badge ${
-                                        client.status === 'Al día' ? 'status-approved' : 'status-rejected'
-                                    }`}>
-                                        {client.status}
-                                    </span>
-                                </td>
-                            </tr>
-                        ))}
+                        <tr>
+                            <td>María González</td>
+                            <td>3</td>
+                            <td>$1,500,000</td>
+                            <td><span class="status-badge status-good">Al día</span></td>
+                        </tr>
+                        <tr>
+                            <td>Carlos Rodríguez</td>
+                            <td>2</td>
+                            <td>$2,800,000</td>
+                            <td><span class="status-badge status-good">Al día</span></td>
+                        </tr>
+                        <tr>
+                            <td>Ana Martínez</td>
+                            <td>4</td>
+                            <td>$3,200,000</td>
+                            <td><span class="status-badge status-bad">En mora</span></td>
+                        </tr>
+                        <tr>
+                            <td>Juan Pérez</td>
+                            <td>1</td>
+                            <td>$800,000</td>
+                            <td><span class="status-badge status-good">Al día</span></td>
+                        </tr>
+                        <tr>
+                            <td>Laura Sánchez</td>
+                            <td>2</td>
+                            <td>$1,950,000</td>
+                            <td><span class="status-badge status-bad">En mora</span></td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
-        );
+        </div>
+    </div>
 
-        // Componente Principal del Dashboard
-        const Dashboard = () => {
-            const [data, setData] = useState(null);
-            const [loading, setLoading] = useState(true);
-            const [error, setError] = useState(null);
-            const [filters, setFilters] = useState({
-                dateRange: 'last6months',
-                branch: 'all',
-                loanType: 'all'
-            });
-
-            const loadData = useCallback(async () => {
-                try {
-                    setLoading(true);
-                    setError(null);
-                    const dashboardData = await apiService.getDashboardData();
-                    setData(dashboardData);
-                } catch (err) {
-                    setError('Error al cargar los datos. Por favor, intente nuevamente.');
-                    console.error('Error loading data:', err);
-                } finally {
-                    setLoading(false);
-                }
-            }, []);
-
-            useEffect(() => {
-                loadData();
-            }, [loadData]);
-
-            const handleFilterChange = (filterName, value) => {
-                setFilters(prev => ({
-                    ...prev,
-                    [filterName]: value
-                }));
-            };
-
-            if (loading) {
-                return (
-                    <div className="app">
-                        <div className="app-header">
-                            <h1>Dashboard de Préstamos</h1>
-                            <p>Sistema de análisis de cartera crediticia</p>
-                        </div>
-                        <div className="dashboard">
-                            <div className="loading">
-                                <div>Cargando datos del almacén...</div>
-                            </div>
-                        </div>
-                    </div>
-                );
-            }
-
-            if (error) {
-                return (
-                    <div className="app">
-                        <div className="app-header">
-                            <h1>Dashboard de Préstamos</h1>
-                            <p>Sistema de análisis de cartera crediticia</p>
-                        </div>
-                        <div className="dashboard">
-                            <div className="error">{error}</div>
-                            <button className="refresh-btn" onClick={loadData}>
-                                🔄 Reintentar
-                            </button>
-                        </div>
-                    </div>
-                );
-            }
-
-            return (
-                <div className="app">
-                    <div className="app-header">
-                        <h1>Dashboard de Préstamos</h1>
-                        <p>Sistema de análisis de cartera crediticia</p>
-                    </div>
-                    
-                    <div className="dashboard">
-                        {/* Filtros */}
-                        <div className="filters">
-                            <div className="filter-group">
-                                <label>Rango de Fechas</label>
-                                <select 
-                                    value={filters.dateRange}
-                                    onChange={(e) => handleFilterChange('dateRange', e.target.value)}
-                                >
-                                    <option value="last3months">Últimos 3 meses</option>
-                                    <option value="last6months">Últimos 6 meses</option>
-                                    <option value="lastYear">Último año</option>
-                                </select>
-                            </div>
-                            
-                            <div className="filter-group">
-                                <label>Sucursal</label>
-                                <select 
-                                    value={filters.branch}
-                                    onChange={(e) => handleFilterChange('branch', e.target.value)}
-                                >
-                                    <option value="all">Todas las sucursales</option>
-                                    <option value="norte">Sucursal Norte</option>
-                                    <option value="sur">Sucursal Sur</option>
-                                    <option value="este">Sucursal Este</option>
-                                    <option value="oeste">Sucursal Oeste</option>
-                                </select>
-                            </div>
-                            
-                            <div className="filter-group">
-                                <label>Tipo de Préstamo</label>
-                                <select 
-                                    value={filters.loanType}
-                                    onChange={(e) => handleFilterChange('loanType', e.target.value)}
-                                >
-                                    <option value="all">Todos los tipos</option>
-                                    <option value="personal">Personal</option>
-                                    <option value="automotriz">Automotriz</option>
-                                    <option value="hipotecario">Hipotecario</option>
-                                </select>
-                            </div>
-                            
-                            <button className="refresh-btn" onClick={loadData}>
-                                🔄 Actualizar
-                            </button>
-                        </div>
-
-                        {/* Estadísticas Principales */}
-                        <div className="stats-grid">
-                            <StatsCard
-                                title="Total de Préstamos"
-                                value={data.summary.totalLoans.toLocaleString()}
-                                trend="+12.5%"
-                                trendType="positive"
-                                type="primary"
-                            />
-                            <StatsCard
-                                title="Monto Total Otorgado"
-                                value={`$${(data.summary.totalAmount / 1000000).toFixed(1)}M`}
-                                trend="+8.3%"
-                                trendType="positive"
-                                type="success"
-                            />
-                            <StatsCard
-                                title="Préstamos Activos"
-                                value={data.summary.activeLoans.toLocaleString()}
-                                trend="+5.2%"
-                                trendType="positive"
-                                type="info"
-                            />
-                            <StatsCard
-                                title="Préstamos en Mora"
-                                value={data.summary.overdueLoans.toLocaleString()}
-                                trend="+2.1%"
-                                trendType="negative"
-                                type="danger"
-                            />
-                        </div>
-
-                        {/* Gráficos */}
-                        <div className="charts-grid">
-                            <LoanTypeChart data={data.loansByType} />
-                            <MorosityChart data={data.morosityData} />
-                            <BranchPerformance data={data.branchPerformance} />
-                        </div>
-
-                        {/* Tablas */}
-                        <div className="tables-grid">
-                            <ClientTable data={data.topClients} />
-                        </div>
-                    </div>
-                </div>
-            );
+    <script>
+        // Datos de ejemplo del almacén de datos
+        const dashboardData = {
+            summary: {
+                totalLoans: 1247,
+                totalAmount: 45892350,
+                activeLoans: 892,
+                overdueLoans: 156
+            },
+            loansByType: [
+                { type: 'Personal', count: 645 },
+                { type: 'Automotriz', count: 328 },
+                { type: 'Hipotecario', count: 274 }
+            ],
+            topClients: [
+                { name: 'María González', loans: 3, amount: 1500000, status: 'Al día' },
+                { name: 'Carlos Rodríguez', loans: 2, amount: 2800000, status: 'Al día' },
+                { name: 'Ana Martínez', loans: 4, amount: 3200000, status: 'En mora' },
+                { name: 'Juan Pérez', loans: 1, amount: 800000, status: 'Al día' },
+                { name: 'Laura Sánchez', loans: 2, amount: 1950000, status: 'En mora' }
+            ]
         };
 
-        // Renderizar la aplicación
-        ReactDOM.render(<Dashboard />, document.getElementById('root'));
+        // Función para cargar datos
+        function loadData() {
+            console.log('Cargando datos del almacén...');
+            
+            // Simular carga de datos
+            setTimeout(() => {
+                // Actualizar estadísticas
+                document.getElementById('totalLoans').textContent = '1,247';
+                document.getElementById('totalAmount').textContent = '$45.8M';
+                document.getElementById('activeLoans').textContent = '892';
+                document.getElementById('overdueLoans').textContent = '156';
+                
+                alert('Datos actualizados correctamente');
+            }, 1000);
+        }
+
+        // Cargar datos al iniciar
+        document.addEventListener('DOMContentLoaded', loadData);
+
+        // Manejar cambios en filtros
+        document.getElementById('periodFilter').addEventListener('change', function() {
+            console.log('Filtro de período cambiado:', this.value);
+        });
+
+        document.getElementById('branchFilter').addEventListener('change', function() {
+            console.log('Filtro de sucursal cambiado:', this.value);
+        });
+
+        document.getElementById('loanTypeFilter').addEventListener('change', function() {
+            console.log('Filtro de tipo de préstamo cambiado:', this.value);
+        });
     </script>
 </body>
 </html>
