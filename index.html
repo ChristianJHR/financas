@@ -3,417 +3,486 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard de Préstamos</title>
+    <title>Dashboard React</title>
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
         }
-
+        
         body {
-            font-family: 'Arial', sans-serif;
-            background: #f0f2f5;
+            background-color: #f5f7fa;
             color: #333;
         }
-
-        .app {
+        
+        .dashboard {
+            display: flex;
             min-height: 100vh;
         }
-
-        .app-header {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(180deg, #2c3e50 0%, #1a2530 100%);
             color: white;
-            padding: 2rem;
+            padding: 20px 0;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .sidebar-header h2 {
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+        }
+        
+        .sidebar-menu li {
+            padding: 12px 20px;
+            transition: all 0.2s;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        
+        .sidebar-menu li:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-menu li.active {
+            background-color: rgba(52, 152, 219, 0.2);
+            border-left: 4px solid #3498db;
+        }
+        
+        .sidebar-menu i {
+            margin-right: 10px;
+            width: 20px;
             text-align: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-
-        .app-header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
         }
-
-        .app-header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
         }
-
-        .dashboard {
-            padding: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
+        
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 500;
+            color: #2c3e50;
         }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
-
-        .stat-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            border-left: 4px solid #2a5298;
-        }
-
-        .stat-card h3 {
-            color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-            text-transform: uppercase;
-        }
-
-        .stat-card .value {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #1e3c72;
-        }
-
-        .charts-container {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-        }
-
-        .charts-container h2 {
-            color: #1e3c72;
-            margin-bottom: 1.5rem;
-            border-bottom: 2px solid #f0f2f5;
-            padding-bottom: 0.5rem;
-        }
-
-        .charts-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-        }
-
-        .chart {
-            background: #f8f9fa;
-            padding: 1rem;
-            border-radius: 8px;
-            height: 300px;
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #3498db;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 1px solid #e9ecef;
-        }
-
-        .chart-placeholder {
-            text-align: center;
-            color: #666;
-        }
-
-        .chart-placeholder .icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .tables-container {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .tables-container h2 {
-            color: #1e3c72;
-            margin-bottom: 1.5rem;
-            border-bottom: 2px solid #f0f2f5;
-            padding-bottom: 0.5rem;
-        }
-
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .data-table th {
-            background: #1e3c72;
             color: white;
-            padding: 1rem;
-            text-align: left;
-        }
-
-        .data-table td {
-            padding: 1rem;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .data-table tr:nth-child(even) {
-            background: #f8f9fa;
-        }
-
-        .status-badge {
-            padding: 0.3rem 0.8rem;
-            border-radius: 15px;
-            font-size: 0.8rem;
             font-weight: bold;
         }
-
-        .status-good {
-            background: #d4edda;
-            color: #155724;
+        
+        /* Stats Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
         }
-
-        .status-bad {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .filters {
-            background: white;
-            padding: 1.5rem;
+        
+        .stat-card {
+            background-color: white;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
+            align-items: center;
+            transition: transform 0.3s, box-shadow 0.3s;
         }
-
-        .filter-group {
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
             display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.5rem;
         }
-
-        .filter-group label {
-            font-weight: bold;
-            color: #1e3c72;
+        
+        .stat-info h3 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .stat-info p {
+            color: #7f8c8d;
             font-size: 0.9rem;
         }
-
-        .filter-group select {
-            padding: 0.5rem;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            min-width: 150px;
+        
+        /* Charts Section */
+        .charts-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
         }
-
-        .refresh-btn {
-            background: #1e3c72;
-            color: white;
+        
+        .chart-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .chart-header h3 {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+        
+        .chart-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chart-actions button {
+            background: none;
             border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
+            color: #7f8c8d;
             cursor: pointer;
-            align-self: flex-end;
+            font-size: 0.9rem;
         }
-
-        .refresh-btn:hover {
-            background: #2a5298;
+        
+        .chart-placeholder {
+            height: 250px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #7f8c8d;
         }
-
+        
+        /* Recent Activity */
+        .activity-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .activity-list {
+            list-style: none;
+        }
+        
+        .activity-item {
+            display: flex;
+            padding: 15px 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: white;
+        }
+        
+        .activity-content h4 {
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+        
+        .activity-content p {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        .activity-time {
+            color: #95a5a6;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
         @media (max-width: 768px) {
             .dashboard {
-                padding: 1rem;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .charts-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .filters {
                 flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+            
+            .sidebar-menu {
+                display: flex;
+                overflow-x: auto;
+            }
+            
+            .sidebar-menu li {
+                white-space: nowrap;
             }
         }
     </style>
 </head>
 <body>
-    <div class="app">
-        <div class="app-header">
-            <h1>🏦 Dashboard de Préstamos</h1>
-            <p>Sistema de Gestión Crediticia - Almacén de Datos</p>
-        </div>
-        
-        <div class="dashboard">
-            <!-- Filtros -->
-            <div class="filters">
-                <div class="filter-group">
-                    <label>Período</label>
-                    <select id="periodFilter">
-                        <option>Últimos 3 meses</option>
-                        <option>Últimos 6 meses</option>
-                        <option>Último año</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label>Sucursal</label>
-                    <select id="branchFilter">
-                        <option>Todas las sucursales</option>
-                        <option>Sucursal Norte</option>
-                        <option>Sucursal Sur</option>
-                        <option>Sucursal Este</option>
-                        <option>Sucursal Oeste</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label>Tipo de Préstamo</label>
-                    <select id="loanTypeFilter">
-                        <option>Todos los tipos</option>
-                        <option>Personal</option>
-                        <option>Automotriz</option>
-                        <option>Hipotecario</option>
-                    </select>
-                </div>
-                <button class="refresh-btn" onclick="loadData()">🔄 Actualizar</button>
-            </div>
+    <div id="root"></div>
 
-            <!-- Estadísticas -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h3>Total de Préstamos</h3>
-                    <div class="value" id="totalLoans">1,247</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Monto Total</h3>
-                    <div class="value" id="totalAmount">$45.8M</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Préstamos Activos</h3>
-                    <div class="value" id="activeLoans">892</div>
-                </div>
-                <div class="stat-card">
-                    <h3>En Morosidad</h3>
-                    <div class="value" id="overdueLoans">156</div>
-                </div>
-            </div>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
 
-            <!-- Gráficos -->
-            <div class="charts-container">
-                <h2>📊 Análisis de Cartera</h2>
-                <div class="charts-grid">
-                    <div class="chart">
-                        <div class="chart-placeholder">
-                            <div class="icon">📈</div>
-                            <h3>Distribución por Tipo</h3>
-                            <p>Personal: 645 | Auto: 328 | Hipoteca: 274</p>
-                        </div>
-                    </div>
-                    <div class="chart">
-                        <div class="chart-placeholder">
-                            <div class="icon">📊</div>
-                            <h3>Tendencia de Morosidad</h3>
-                            <p>Ene: 4.2% | Feb: 3.8% | Mar: 5.1%</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        // Componente del Dashboard
+        function Dashboard() {
+            const [activeMenu, setActiveMenu] = useState('dashboard');
+            const [stats, setStats] = useState([]);
+            const [activities, setActivities] = useState([]);
 
-            <!-- Tabla de Clientes -->
-            <div class="tables-container">
-                <h2>👥 Top Clientes</h2>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Cliente</th>
-                            <th>Préstamos</th>
-                            <th>Monto Total</th>
-                            <th>Estado</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>María González</td>
-                            <td>3</td>
-                            <td>$1,500,000</td>
-                            <td><span class="status-badge status-good">Al día</span></td>
-                        </tr>
-                        <tr>
-                            <td>Carlos Rodríguez</td>
-                            <td>2</td>
-                            <td>$2,800,000</td>
-                            <td><span class="status-badge status-good">Al día</span></td>
-                        </tr>
-                        <tr>
-                            <td>Ana Martínez</td>
-                            <td>4</td>
-                            <td>$3,200,000</td>
-                            <td><span class="status-badge status-bad">En mora</span></td>
-                        </tr>
-                        <tr>
-                            <td>Juan Pérez</td>
-                            <td>1</td>
-                            <td>$800,000</td>
-                            <td><span class="status-badge status-good">Al día</span></td>
-                        </tr>
-                        <tr>
-                            <td>Laura Sánchez</td>
-                            <td>2</td>
-                            <td>$1,950,000</td>
-                            <td><span class="status-badge status-bad">En mora</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Datos de ejemplo del almacén de datos
-        const dashboardData = {
-            summary: {
-                totalLoans: 1247,
-                totalAmount: 45892350,
-                activeLoans: 892,
-                overdueLoans: 156
-            },
-            loansByType: [
-                { type: 'Personal', count: 645 },
-                { type: 'Automotriz', count: 328 },
-                { type: 'Hipotecario', count: 274 }
-            ],
-            topClients: [
-                { name: 'María González', loans: 3, amount: 1500000, status: 'Al día' },
-                { name: 'Carlos Rodríguez', loans: 2, amount: 2800000, status: 'Al día' },
-                { name: 'Ana Martínez', loans: 4, amount: 3200000, status: 'En mora' },
-                { name: 'Juan Pérez', loans: 1, amount: 800000, status: 'Al día' },
-                { name: 'Laura Sánchez', loans: 2, amount: 1950000, status: 'En mora' }
-            ]
-        };
-
-        // Función para cargar datos
-        function loadData() {
-            console.log('Cargando datos del almacén...');
-            
-            // Simular carga de datos
-            setTimeout(() => {
-                // Actualizar estadísticas
-                document.getElementById('totalLoans').textContent = '1,247';
-                document.getElementById('totalAmount').textContent = '$45.8M';
-                document.getElementById('activeLoans').textContent = '892';
-                document.getElementById('overdueLoans').textContent = '156';
+            // Datos de ejemplo para las estadísticas
+            useEffect(() => {
+                setStats([
+                    { id: 1, title: 'Total Usuarios', value: '12,345', change: '+12%', icon: 'fas fa-users', color: '#3498db' },
+                    { id: 2, title: 'Ingresos', value: '$45,678', change: '+8%', icon: 'fas fa-dollar-sign', color: '#2ecc71' },
+                    { id: 3, title: 'Pedidos', value: '1,234', change: '+5%', icon: 'fas fa-shopping-cart', color: '#e74c3c' },
+                    { id: 4, title: 'Crecimiento', value: '32.5%', change: '+2.3%', icon: 'fas fa-chart-line', color: '#f39c12' }
+                ]);
                 
-                alert('Datos actualizados correctamente');
-            }, 1000);
+                setActivities([
+                    { id: 1, title: 'Nuevo usuario registrado', description: 'Juan Pérez se ha registrado en la plataforma', time: 'Hace 5 min', icon: 'fas fa-user-plus', color: '#3498db' },
+                    { id: 2, title: 'Pedido completado', description: 'El pedido #12345 ha sido entregado', time: 'Hace 15 min', icon: 'fas fa-check-circle', color: '#2ecc71' },
+                    { id: 3, title: 'Pago recibido', description: 'Se ha recibido un pago de $250.00', time: 'Hace 1 hora', icon: 'fas fa-money-bill-wave', color: '#2ecc71' },
+                    { id: 4, title: 'Problema reportado', description: 'Usuario reportó un problema con el login', time: 'Hace 2 horas', icon: 'fas fa-exclamation-triangle', color: '#e74c3c' }
+                ]);
+            }, []);
+
+            return (
+                <div className="dashboard">
+                    {/* Sidebar */}
+                    <Sidebar activeMenu={activeMenu} setActiveMenu={setActiveMenu} />
+                    
+                    {/* Contenido Principal */}
+                    <div className="main-content">
+                        <Header />
+                        
+                        {/* Tarjetas de Estadísticas */}
+                        <div className="stats-container">
+                            {stats.map(stat => (
+                                <StatCard 
+                                    key={stat.id}
+                                    title={stat.title}
+                                    value={stat.value}
+                                    change={stat.change}
+                                    icon={stat.icon}
+                                    color={stat.color}
+                                />
+                            ))}
+                        </div>
+                        
+                        {/* Gráficos */}
+                        <div className="charts-container">
+                            <ChartCard title="Ventas Mensuales" />
+                            <ChartCard title="Tráfico de Usuarios" />
+                        </div>
+                        
+                        {/* Actividad Reciente */}
+                        <ActivityCard activities={activities} />
+                    </div>
+                </div>
+            );
         }
 
-        // Cargar datos al iniciar
-        document.addEventListener('DOMContentLoaded', loadData);
+        // Componente del Sidebar
+        function Sidebar({ activeMenu, setActiveMenu }) {
+            const menuItems = [
+                { id: 'dashboard', label: 'Dashboard', icon: 'fas fa-tachometer-alt' },
+                { id: 'users', label: 'Usuarios', icon: 'fas fa-users' },
+                { id: 'orders', label: 'Pedidos', icon: 'fas fa-shopping-cart' },
+                { id: 'products', label: 'Productos', icon: 'fas fa-box' },
+                { id: 'analytics', label: 'Analíticas', icon: 'fas fa-chart-bar' },
+                { id: 'settings', label: 'Configuración', icon: 'fas fa-cog' }
+            ];
 
-        // Manejar cambios en filtros
-        document.getElementById('periodFilter').addEventListener('change', function() {
-            console.log('Filtro de período cambiado:', this.value);
-        });
+            return (
+                <div className="sidebar">
+                    <div className="sidebar-header">
+                        <h2><i className="fas fa-chart-pie"></i> MiDashboard</h2>
+                    </div>
+                    <ul className="sidebar-menu">
+                        {menuItems.map(item => (
+                            <li 
+                                key={item.id}
+                                className={activeMenu === item.id ? 'active' : ''}
+                                onClick={() => setActiveMenu(item.id)}
+                            >
+                                <i className={item.icon}></i>
+                                {item.label}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            );
+        }
 
-        document.getElementById('branchFilter').addEventListener('change', function() {
-            console.log('Filtro de sucursal cambiado:', this.value);
-        });
+        // Componente del Header
+        function Header() {
+            return (
+                <div className="header">
+                    <h1>Dashboard Principal</h1>
+                    <div className="user-info">
+                        <div className="notifications">
+                            <i className="fas fa-bell"></i>
+                        </div>
+                        <div className="user-avatar">
+                            <span>JS</span>
+                        </div>
+                        <div className="user-details">
+                            <div className="user-name">John Smith</div>
+                            <div className="user-role">Administrador</div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
 
-        document.getElementById('loanTypeFilter').addEventListener('change', function() {
-            console.log('Filtro de tipo de préstamo cambiado:', this.value);
-        });
+        // Componente de Tarjeta de Estadística
+        function StatCard({ title, value, change, icon, color }) {
+            return (
+                <div className="stat-card">
+                    <div className="stat-icon" style={{ backgroundColor: color }}>
+                        <i className={icon}></i>
+                    </div>
+                    <div className="stat-info">
+                        <h3>{value}</h3>
+                        <p>{title}</p>
+                        <span style={{ color: change.startsWith('+') ? '#2ecc71' : '#e74c3c' }}>
+                            {change}
+                        </span>
+                    </div>
+                </div>
+            );
+        }
+
+        // Componente de Tarjeta de Gráfico
+        function ChartCard({ title }) {
+            return (
+                <div className="chart-card">
+                    <div className="chart-header">
+                        <h3>{title}</h3>
+                        <div className="chart-actions">
+                            <button>Día</button>
+                            <button>Semana</button>
+                            <button>Mes</button>
+                        </div>
+                    </div>
+                    <div className="chart-placeholder">
+                        <i className="fas fa-chart-bar" style={{ fontSize: '2rem', marginRight: '10px' }}></i>
+                        Gráfico de {title}
+                    </div>
+                </div>
+            );
+        }
+
+        // Componente de Tarjeta de Actividad
+        function ActivityCard({ activities }) {
+            return (
+                <div className="activity-card">
+                    <div className="chart-header">
+                        <h3>Actividad Reciente</h3>
+                        <div className="chart-actions">
+                            <button>Ver todo</button>
+                        </div>
+                    </div>
+                    <ul className="activity-list">
+                        {activities.map(activity => (
+                            <ActivityItem 
+                                key={activity.id}
+                                title={activity.title}
+                                description={activity.description}
+                                time={activity.time}
+                                icon={activity.icon}
+                                color={activity.color}
+                            />
+                        ))}
+                    </ul>
+                </div>
+            );
+        }
+
+        // Componente de Ítem de Actividad
+        function ActivityItem({ title, description, time, icon, color }) {
+            return (
+                <li className="activity-item">
+                    <div className="activity-icon" style={{ backgroundColor: color }}>
+                        <i className={icon}></i>
+                    </div>
+                    <div className="activity-content">
+                        <h4>{title}</h4>
+                        <p>{description}</p>
+                        <div className="activity-time">{time}</div>
+                    </div>
+                </li>
+            );
+        }
+
+        // Renderizar la aplicación
+        ReactDOM.render(<Dashboard />, document.getElementById('root'));
     </script>
 </body>
 </html>
