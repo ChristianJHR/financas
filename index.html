@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard React</title>
+    <title>Dashboard React con Gráficos</title>
     <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -156,6 +157,11 @@
             font-size: 0.9rem;
         }
         
+        .stat-change {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
         /* Charts Section */
         .charts-container {
             display: grid;
@@ -194,16 +200,23 @@
             color: #7f8c8d;
             cursor: pointer;
             font-size: 0.9rem;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: all 0.2s;
         }
         
-        .chart-placeholder {
+        .chart-actions button:hover {
+            background-color: #f5f7fa;
+        }
+        
+        .chart-actions button.active {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .chart-container {
             height: 250px;
-            background-color: #f8f9fa;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #7f8c8d;
+            position: relative;
         }
         
         /* Recent Activity */
@@ -255,6 +268,19 @@
             margin-top: 5px;
         }
         
+        .view-all {
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        .view-all button {
+            background: none;
+            border: none;
+            color: #3498db;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
         /* Responsive */
         @media (max-width: 992px) {
             .charts-container {
@@ -287,13 +313,15 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState, useEffect, useRef } = React;
 
         // Componente del Dashboard
         function Dashboard() {
             const [activeMenu, setActiveMenu] = useState('dashboard');
             const [stats, setStats] = useState([]);
             const [activities, setActivities] = useState([]);
+            const [salesPeriod, setSalesPeriod] = useState('mes');
+            const [trafficPeriod, setTrafficPeriod] = useState('mes');
 
             // Datos de ejemplo para las estadísticas
             useEffect(() => {
@@ -337,8 +365,18 @@
                         
                         {/* Gráficos */}
                         <div className="charts-container">
-                            <ChartCard title="Ventas Mensuales" />
-                            <ChartCard title="Tráfico de Usuarios" />
+                            <ChartCard 
+                                title="Ventas Mensuales" 
+                                period={salesPeriod}
+                                setPeriod={setSalesPeriod}
+                                type="line"
+                            />
+                            <ChartCard 
+                                title="Tráfico de Usuarios" 
+                                period={trafficPeriod}
+                                setPeriod={setTrafficPeriod}
+                                type="doughnut"
+                            />
                         </div>
                         
                         {/* Actividad Reciente */}
@@ -411,7 +449,7 @@
                     <div className="stat-info">
                         <h3>{value}</h3>
                         <p>{title}</p>
-                        <span style={{ color: change.startsWith('+') ? '#2ecc71' : '#e74c3c' }}>
+                        <span className="stat-change" style={{ color: change.startsWith('+') ? '#2ecc71' : '#e74c3c' }}>
                             {change}
                         </span>
                     </div>
@@ -420,20 +458,151 @@
         }
 
         // Componente de Tarjeta de Gráfico
-        function ChartCard({ title }) {
+        function ChartCard({ title, period, setPeriod, type }) {
+            const chartRef = useRef(null);
+            const chartInstance = useRef(null);
+            
+            useEffect(() => {
+                if (chartRef.current) {
+                    // Destruir el gráfico anterior si existe
+                    if (chartInstance.current) {
+                        chartInstance.current.destroy();
+                    }
+                    
+                    const ctx = chartRef.current.getContext('2d');
+                    
+                    // Datos para el gráfico de línea (Ventas)
+                    if (type === 'line') {
+                        let labels, data;
+                        
+                        if (period === 'dia') {
+                            labels = ['8:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00'];
+                            data = [1200, 1900, 1500, 2200, 1800, 2500, 2000];
+                        } else if (period === 'semana') {
+                            labels = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+                            data = [3200, 4500, 3800, 5200, 4800, 6100, 5500];
+                        } else {
+                            labels = ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'];
+                            data = [18500, 22000, 19800, 24500];
+                        }
+                        
+                        chartInstance.current = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: 'Ventas',
+                                    data: data,
+                                    borderColor: '#3498db',
+                                    backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                                    borderWidth: 2,
+                                    fill: true,
+                                    tension: 0.4
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        grid: {
+                                            color: 'rgba(0, 0, 0, 0.05)'
+                                        }
+                                    },
+                                    x: {
+                                        grid: {
+                                            display: false
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+                    
+                    // Datos para el gráfico de dona (Tráfico)
+                    if (type === 'doughnut') {
+                        let labels, data;
+                        
+                        if (period === 'dia') {
+                            labels = ['Directo', 'Búsqueda', 'Social', 'Email'];
+                            data = [45, 25, 20, 10];
+                        } else if (period === 'semana') {
+                            labels = ['Directo', 'Búsqueda', 'Social', 'Email'];
+                            data = [40, 30, 15, 15];
+                        } else {
+                            labels = ['Directo', 'Búsqueda', 'Social', 'Email'];
+                            data = [35, 35, 20, 10];
+                        }
+                        
+                        chartInstance.current = new Chart(ctx, {
+                            type: 'doughnut',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    data: data,
+                                    backgroundColor: [
+                                        '#3498db',
+                                        '#2ecc71',
+                                        '#e74c3c',
+                                        '#f39c12'
+                                    ],
+                                    borderWidth: 0
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom'
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
+                
+                // Limpiar al desmontar el componente
+                return () => {
+                    if (chartInstance.current) {
+                        chartInstance.current.destroy();
+                    }
+                };
+            }, [period, type]);
+            
             return (
                 <div className="chart-card">
                     <div className="chart-header">
                         <h3>{title}</h3>
                         <div className="chart-actions">
-                            <button>Día</button>
-                            <button>Semana</button>
-                            <button>Mes</button>
+                            <button 
+                                className={period === 'dia' ? 'active' : ''}
+                                onClick={() => setPeriod('dia')}
+                            >
+                                Día
+                            </button>
+                            <button 
+                                className={period === 'semana' ? 'active' : ''}
+                                onClick={() => setPeriod('semana')}
+                            >
+                                Semana
+                            </button>
+                            <button 
+                                className={period === 'mes' ? 'active' : ''}
+                                onClick={() => setPeriod('mes')}
+                            >
+                                Mes
+                            </button>
                         </div>
                     </div>
-                    <div className="chart-placeholder">
-                        <i className="fas fa-chart-bar" style={{ fontSize: '2rem', marginRight: '10px' }}></i>
-                        Gráfico de {title}
+                    <div className="chart-container">
+                        <canvas ref={chartRef}></canvas>
                     </div>
                 </div>
             );
@@ -445,9 +614,6 @@
                 <div className="activity-card">
                     <div className="chart-header">
                         <h3>Actividad Reciente</h3>
-                        <div className="chart-actions">
-                            <button>Ver todo</button>
-                        </div>
                     </div>
                     <ul className="activity-list">
                         {activities.map(activity => (
@@ -461,6 +627,9 @@
                             />
                         ))}
                     </ul>
+                    <div className="view-all">
+                        <button>Ver todo</button>
+                    </div>
                 </div>
             );
         }
